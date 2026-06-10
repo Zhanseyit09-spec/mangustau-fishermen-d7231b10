@@ -10,8 +10,10 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Fish, Plus, Clock, LogOut } from "lucide-react";
+import { Fish, Plus, Clock, LogOut, Wallet } from "lucide-react";
 import { format } from "date-fns";
+
+const fmtKZT = (n: number) => `${Math.round(n).toLocaleString("ru-RU")} KZT`;
 
 export const Route = createFileRoute("/fisherman")({
   head: () => ({
