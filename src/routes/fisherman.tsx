@@ -24,9 +24,17 @@ export const Route = createFileRoute("/fisherman")({
 });
 
 function FishermanPage() {
+  const navigate = useNavigate();
   const { currentFishermanId, setCurrentFishermanId, fishermen, logs, addLog, getConsumedByFisherman } = useFishery();
   const [fishType, setFishType] = useState<FishType>("Sturgeon");
   const [weight, setWeight] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!localStorage.getItem("digital-fisherman:user")) {
+      navigate({ to: "/register" });
+    }
+  }, [navigate]);
 
   const consumed = getConsumedByFisherman(currentFishermanId);
   const myLogs = useMemo(() => logs.filter((l) => l.fishermanId === currentFishermanId), [logs, currentFishermanId]);
