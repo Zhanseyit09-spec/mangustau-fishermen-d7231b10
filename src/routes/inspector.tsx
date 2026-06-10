@@ -205,6 +205,15 @@ function InspectorPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="prices">
+          <MarketPricesControl
+            marketPrices={marketPrices}
+            onSave={(p) => { updateMarketPrices(p); toast.success("Нарықтық бағалар жаңартылды"); }}
+          />
+        </TabsContent>
+
+
+
         <TabsContent value="controls">
           <QuotaControls
             regionQuotas={regionQuotas}
