@@ -151,6 +151,7 @@ function InspectorPage() {
       <Tabs defaultValue="monitor" className="mt-5">
         <TabsList>
           <TabsTrigger value="monitor">Тікелей бақылау</TabsTrigger>
+          <TabsTrigger value="prices"><Wallet className="mr-1.5 h-3.5 w-3.5" /> Нарықтық бағалар</TabsTrigger>
           <TabsTrigger value="controls"><Settings2 className="mr-1.5 h-3.5 w-3.5" /> Квота басқару</TabsTrigger>
           <TabsTrigger value="history"><History className="mr-1.5 h-3.5 w-3.5" /> Тарих ({history.length})</TabsTrigger>
         </TabsList>
