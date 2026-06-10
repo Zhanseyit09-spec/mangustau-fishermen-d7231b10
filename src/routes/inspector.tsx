@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save } from "lucide-react";
+import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save, Wallet } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -27,13 +27,15 @@ export const Route = createFileRoute("/inspector")({
 });
 
 const CHART_COLORS = ["oklch(0.78 0.14 195)", "oklch(0.65 0.18 220)", "oklch(0.72 0.16 160)"];
+const fmtKZT = (n: number) => `${Math.round(n).toLocaleString("ru-RU")} KZT`;
 
 function InspectorPage() {
   const {
     fishermen, logs, history,
     getConsumedRegion,
     regionQuotas, perFishermanQuotas,
-    updateRegionQuotas, updatePerFishermanQuotas,
+    marketPrices,
+    updateRegionQuotas, updatePerFishermanQuotas, updateMarketPrices,
     endDailyShift,
   } = useFishery();
   const consumed = getConsumedRegion();
@@ -149,6 +151,7 @@ function InspectorPage() {
       <Tabs defaultValue="monitor" className="mt-5">
         <TabsList>
           <TabsTrigger value="monitor">Тікелей бақылау</TabsTrigger>
+          <TabsTrigger value="prices"><Wallet className="mr-1.5 h-3.5 w-3.5" /> Нарықтық бағалар</TabsTrigger>
           <TabsTrigger value="controls"><Settings2 className="mr-1.5 h-3.5 w-3.5" /> Квота басқару</TabsTrigger>
           <TabsTrigger value="history"><History className="mr-1.5 h-3.5 w-3.5" /> Тарих ({history.length})</TabsTrigger>
         </TabsList>
@@ -172,6 +175,7 @@ function InspectorPage() {
                       <TableHead>Балықшы</TableHead>
                       <TableHead>Балық</TableHead>
                       <TableHead className="text-right">Салмағы</TableHead>
+                      <TableHead className="text-right">Құны</TableHead>
                       <TableHead>Уақыты</TableHead>
                       <TableHead className="text-right">Статус</TableHead>
                     </TableRow>
@@ -184,6 +188,7 @@ function InspectorPage() {
                           <TableCell className="font-medium">{l.fishermanName}</TableCell>
                           <TableCell>{l.fishType}</TableCell>
                           <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
+                          <TableCell className="text-right tabular-nums text-primary font-semibold">{fmtKZT(l.weightKg * (marketPrices[l.fishType] ?? 0))}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>
                           <TableCell className="text-right">
                             {exceeded
@@ -199,6 +204,15 @@ function InspectorPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="prices">
+          <MarketPricesControl
+            marketPrices={marketPrices}
+            onSave={(p) => { updateMarketPrices(p); toast.success("Нарықтық бағалар жаңартылды"); }}
+          />
+        </TabsContent>
+
+
 
         <TabsContent value="controls">
           <QuotaControls
@@ -255,6 +269,47 @@ function InspectorPage() {
     </main>
   );
 }
+
+function MarketPricesControl({
+  marketPrices, onSave,
+}: {
+  marketPrices: Record<FishType, number>;
+  onSave: (p: Record<FishType, number>) => void;
+}) {
+  const [prices, setPrices] = useState(marketPrices);
+  useEffect(() => { setPrices(marketPrices); }, [marketPrices]);
+
+  return (
+    <Card className="border-border/60 bg-card/60">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Нарықтық бағалар (KZT / кг)</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {FISH_TYPES.map((t) => (
+            <div key={`price-${t}`} className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t}</Label>
+              <Input
+                type="number" min={0} step={100}
+                value={prices[t]}
+                onChange={(e) => setPrices({ ...prices, [t]: Number(e.target.value) || 0 })}
+              />
+              <p className="text-[11px] text-muted-foreground tabular-nums">
+                {fmtKZT(prices[t] ?? 0)} / кг
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={() => onSave(prices)}>
+            <Save className="mr-1.5 h-4 w-4" /> Сақтау
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 function QuotaControls({
   regionQuotas, perFishermanQuotas, onSave,

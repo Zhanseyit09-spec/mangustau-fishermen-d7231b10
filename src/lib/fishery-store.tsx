@@ -17,6 +17,13 @@ export const DEFAULT_PER_FISHERMAN_QUOTA: Record<FishType, number> = {
   "Caspian Roach": 600,
 };
 
+// Default market prices in KZT per kg
+export const DEFAULT_MARKET_PRICES: Record<FishType, number> = {
+  Sturgeon: 8000,
+  "Common Carp": 2000,
+  "Caspian Roach": 1200,
+};
+
 export interface CatchLog {
   id: string;
   fishermanId: string;
@@ -52,6 +59,7 @@ interface PersistState {
   history: HistoryEntry[];
   regionQuotas: Record<FishType, number>;
   perFishermanQuotas: Record<FishType, number>;
+  marketPrices: Record<FishType, number>;
   currentFishermanId: string | null;
 }
 
@@ -61,6 +69,7 @@ const defaultState = (): PersistState => ({
   history: [],
   regionQuotas: { ...DEFAULT_REGION_QUOTAS },
   perFishermanQuotas: { ...DEFAULT_PER_FISHERMAN_QUOTA },
+  marketPrices: { ...DEFAULT_MARKET_PRICES },
   currentFishermanId: null,
 });
 
@@ -72,6 +81,7 @@ interface Ctx extends PersistState {
   getConsumedRegion: () => Record<FishType, number>;
   updateRegionQuotas: (q: Record<FishType, number>) => void;
   updatePerFishermanQuotas: (q: Record<FishType, number>) => void;
+  updateMarketPrices: (p: Record<FishType, number>) => void;
   endDailyShift: () => number;
 }
 
@@ -93,6 +103,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           fishermen: parsed.fishermen?.length ? parsed.fishermen : prev.fishermen,
           regionQuotas: { ...prev.regionQuotas, ...(parsed.regionQuotas ?? {}) },
           perFishermanQuotas: { ...prev.perFishermanQuotas, ...(parsed.perFishermanQuotas ?? {}) },
+          marketPrices: { ...prev.marketPrices, ...(parsed.marketPrices ?? {}) },
         }));
       }
       // Sync current fisherman id from session user
@@ -163,6 +174,8 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
     updateRegionQuotas: (q) => setState((s) => ({ ...s, regionQuotas: { ...s.regionQuotas, ...q } })),
     updatePerFishermanQuotas: (q) =>
       setState((s) => ({ ...s, perFishermanQuotas: { ...s.perFishermanQuotas, ...q } })),
+    updateMarketPrices: (p) =>
+      setState((s) => ({ ...s, marketPrices: { ...s.marketPrices, ...p } })),
     endDailyShift: () => {
       let count = 0;
       setState((s) => {
