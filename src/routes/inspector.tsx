@@ -270,6 +270,47 @@ function InspectorPage() {
   );
 }
 
+function MarketPricesControl({
+  marketPrices, onSave,
+}: {
+  marketPrices: Record<FishType, number>;
+  onSave: (p: Record<FishType, number>) => void;
+}) {
+  const [prices, setPrices] = useState(marketPrices);
+  useEffect(() => { setPrices(marketPrices); }, [marketPrices]);
+
+  return (
+    <Card className="border-border/60 bg-card/60">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Нарықтық бағалар (KZT / кг)</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {FISH_TYPES.map((t) => (
+            <div key={`price-${t}`} className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t}</Label>
+              <Input
+                type="number" min={0} step={100}
+                value={prices[t]}
+                onChange={(e) => setPrices({ ...prices, [t]: Number(e.target.value) || 0 })}
+              />
+              <p className="text-[11px] text-muted-foreground tabular-nums">
+                {fmtKZT(prices[t] ?? 0)} / кг
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={() => onSave(prices)}>
+            <Save className="mr-1.5 h-4 w-4" /> Сақтау
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+
 function QuotaControls({
   regionQuotas, perFishermanQuotas, onSave,
 }: {
