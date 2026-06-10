@@ -59,6 +59,7 @@ interface PersistState {
   history: HistoryEntry[];
   regionQuotas: Record<FishType, number>;
   perFishermanQuotas: Record<FishType, number>;
+  marketPrices: Record<FishType, number>;
   currentFishermanId: string | null;
 }
 
@@ -68,6 +69,7 @@ const defaultState = (): PersistState => ({
   history: [],
   regionQuotas: { ...DEFAULT_REGION_QUOTAS },
   perFishermanQuotas: { ...DEFAULT_PER_FISHERMAN_QUOTA },
+  marketPrices: { ...DEFAULT_MARKET_PRICES },
   currentFishermanId: null,
 });
 
@@ -79,6 +81,7 @@ interface Ctx extends PersistState {
   getConsumedRegion: () => Record<FishType, number>;
   updateRegionQuotas: (q: Record<FishType, number>) => void;
   updatePerFishermanQuotas: (q: Record<FishType, number>) => void;
+  updateMarketPrices: (p: Record<FishType, number>) => void;
   endDailyShift: () => number;
 }
 
