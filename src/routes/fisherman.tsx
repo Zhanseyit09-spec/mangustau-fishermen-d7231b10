@@ -148,6 +148,17 @@ function FishermanPage() {
               <Input type="number" inputMode="decimal" step="0.1" min="0" placeholder="мысалы 12.5"
                 value={weight} onChange={(e) => setWeight(e.target.value)} />
             </div>
+            <div className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
+                  <Wallet className="h-3.5 w-3.5 text-primary" /> Болжамды құны
+                </span>
+                <span className="text-lg font-bold tabular-nums text-primary">{fmtKZT(estimatedValue)}</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                {weightNum || 0} кг × {fmtKZT(marketPrices[fishType] ?? 0)}/кг
+              </p>
+            </div>
             <div className="space-y-1.5">
               <Label>Күні / уақыты</Label>
               <div className="flex items-center gap-2 rounded-md border border-input bg-input/50 px-3 py-2 text-sm text-muted-foreground">
