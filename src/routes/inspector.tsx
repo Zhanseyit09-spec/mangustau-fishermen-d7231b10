@@ -37,6 +37,8 @@ function InspectorPage() {
     endDailyShift,
   } = useFishery();
   const consumed = getConsumedRegion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const todayTotal = useMemo(() => {
     const start = new Date(); start.setHours(0, 0, 0, 0);
@@ -182,7 +184,7 @@ function InspectorPage() {
                           <TableCell className="font-medium">{l.fishermanName}</TableCell>
                           <TableCell>{l.fishType}</TableCell>
                           <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{format(l.timestamp, "MMM d, HH:mm")}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>
                           <TableCell className="text-right">
                             {exceeded
                               ? <Badge variant="destructive">Квота асырылды!</Badge>
@@ -232,7 +234,7 @@ function InspectorPage() {
                   <TableBody>
                     {history.slice(0, 100).map((h) => (
                       <TableRow key={h.id}>
-                        <TableCell className="text-xs text-muted-foreground">{format(h.timestamp, "yyyy-MM-dd HH:mm")}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{mounted ? format(h.timestamp, "yyyy-MM-dd HH:mm") : ""}</TableCell>
                         <TableCell className="font-medium">{h.fishermanName}</TableCell>
                         <TableCell>{h.fishType}</TableCell>
                         <TableCell className="text-right tabular-nums">{h.weightKg}kg</TableCell>
