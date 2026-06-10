@@ -37,6 +37,8 @@ function InspectorPage() {
     endDailyShift,
   } = useFishery();
   const consumed = getConsumedRegion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const todayTotal = useMemo(() => {
     const start = new Date(); start.setHours(0, 0, 0, 0);
