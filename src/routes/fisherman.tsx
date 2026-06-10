@@ -198,6 +198,7 @@ function FishermanPage() {
                 <TableRow>
                   <TableHead>Балық</TableHead>
                   <TableHead className="text-right">Салмағы</TableHead>
+                  <TableHead className="text-right">Құны</TableHead>
                   <TableHead className="text-right">Уақыты</TableHead>
                 </TableRow>
               </TableHeader>
@@ -206,6 +207,7 @@ function FishermanPage() {
                   <TableRow key={l.id}>
                     <TableCell className="font-medium">{l.fishType}</TableCell>
                     <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
+                    <TableCell className="text-right tabular-nums text-primary font-semibold">{fmtKZT(l.weightKg * (marketPrices[l.fishType] ?? 0))}</TableCell>
                     <TableCell className="text-right text-muted-foreground text-xs" suppressHydrationWarning>{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>
                   </TableRow>
                 ))}
