@@ -21,6 +21,7 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { registerFisherman } = useFishery();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [iin, setIin] = useState("");
