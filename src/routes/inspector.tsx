@@ -27,6 +27,7 @@ export const Route = createFileRoute("/inspector")({
 });
 
 const CHART_COLORS = ["oklch(0.78 0.14 195)", "oklch(0.65 0.18 220)", "oklch(0.72 0.16 160)"];
+const fmtKZT = (n: number) => `${Math.round(n).toLocaleString("ru-RU")} KZT`;
 
 function InspectorPage() {
   const {
