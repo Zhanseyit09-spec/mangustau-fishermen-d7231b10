@@ -103,6 +103,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           fishermen: parsed.fishermen?.length ? parsed.fishermen : prev.fishermen,
           regionQuotas: { ...prev.regionQuotas, ...(parsed.regionQuotas ?? {}) },
           perFishermanQuotas: { ...prev.perFishermanQuotas, ...(parsed.perFishermanQuotas ?? {}) },
+          marketPrices: { ...prev.marketPrices, ...(parsed.marketPrices ?? {}) },
         }));
       }
       // Sync current fisherman id from session user
