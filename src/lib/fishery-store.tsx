@@ -174,6 +174,8 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
     updateRegionQuotas: (q) => setState((s) => ({ ...s, regionQuotas: { ...s.regionQuotas, ...q } })),
     updatePerFishermanQuotas: (q) =>
       setState((s) => ({ ...s, perFishermanQuotas: { ...s.perFishermanQuotas, ...q } })),
+    updateMarketPrices: (p) =>
+      setState((s) => ({ ...s, marketPrices: { ...s.marketPrices, ...p } })),
     endDailyShift: () => {
       let count = 0;
       setState((s) => {
