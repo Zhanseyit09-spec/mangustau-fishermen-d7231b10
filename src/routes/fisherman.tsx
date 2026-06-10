@@ -34,12 +34,16 @@ function FishermanPage() {
     addLog,
     getConsumedByFisherman,
     perFishermanQuotas,
+    marketPrices,
     setCurrentFishermanId,
   } = useFishery();
   const [fishType, setFishType] = useState<FishType>("Sturgeon");
   const [weight, setWeight] = useState("");
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
+
+  const weightNum = parseFloat(weight) || 0;
+  const estimatedValue = weightNum * (marketPrices[fishType] ?? 0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
