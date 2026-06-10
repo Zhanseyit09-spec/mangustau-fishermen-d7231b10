@@ -17,6 +17,13 @@ export const DEFAULT_PER_FISHERMAN_QUOTA: Record<FishType, number> = {
   "Caspian Roach": 600,
 };
 
+// Default market prices in KZT per kg
+export const DEFAULT_MARKET_PRICES: Record<FishType, number> = {
+  Sturgeon: 8000,
+  "Common Carp": 2000,
+  "Caspian Roach": 1200,
+};
+
 export interface CatchLog {
   id: string;
   fishermanId: string;
