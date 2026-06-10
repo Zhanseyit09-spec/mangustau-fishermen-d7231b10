@@ -1,11 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { FISH_TYPES, PER_FISHERMAN_QUOTA, QUOTAS, useFishery, type FishType } from "@/lib/fishery-store";
+import { useEffect, useMemo, useState } from "react";
+import { FISH_TYPES, useFishery, type FishType } from "@/lib/fishery-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Scale, AlertTriangle, TrendingUp } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   PieChart, Pie, Cell, Legend,
@@ -24,7 +29,13 @@ export const Route = createFileRoute("/inspector")({
 const CHART_COLORS = ["oklch(0.78 0.14 195)", "oklch(0.65 0.18 220)", "oklch(0.72 0.16 160)"];
 
 function InspectorPage() {
-  const { fishermen, logs, getConsumedRegion } = useFishery();
+  const {
+    fishermen, logs, history,
+    getConsumedRegion,
+    regionQuotas, perFishermanQuotas,
+    updateRegionQuotas, updatePerFishermanQuotas,
+    endDailyShift,
+  } = useFishery();
   const consumed = getConsumedRegion();
 
   const todayTotal = useMemo(() => {
@@ -32,7 +43,6 @@ function InspectorPage() {
     return logs.filter((l) => l.timestamp >= start.getTime()).reduce((s, l) => s + l.weightKg, 0);
   }, [logs]);
 
-  // Per-fisherman per-type consumption for alerts
   const alerts = useMemo(() => {
     const map: Record<string, Record<FishType, number>> = {};
     for (const l of logs) {
@@ -44,48 +54,60 @@ function InspectorPage() {
       const m = map[f.id];
       if (!m) continue;
       for (const t of FISH_TYPES) {
-        if (m[t] > PER_FISHERMAN_QUOTA[t]) list.push({ fishermanId: f.id, fishermanName: f.name, fishType: t, amount: m[t], quota: PER_FISHERMAN_QUOTA[t] });
+        if (m[t] > perFishermanQuotas[t]) list.push({ fishermanId: f.id, fishermanName: f.name, fishType: t, amount: m[t], quota: perFishermanQuotas[t] });
       }
     }
     return list;
-  }, [logs, fishermen]);
+  }, [logs, fishermen, perFishermanQuotas]);
 
   const exceededFishermen = new Set(alerts.map((a) => a.fishermanId));
 
   const barData = FISH_TYPES.map((t) => ({
     name: t,
     Consumed: Math.round(consumed[t]),
-    Quota: QUOTAS[t],
+    Quota: regionQuotas[t],
   }));
 
   const pieData = FISH_TYPES
     .map((t) => ({ name: t, value: Math.round(consumed[t]) }))
     .filter((d) => d.value > 0);
 
+  const onEndShift = () => {
+    const count = endDailyShift();
+    if (count === 0) {
+      toast.info("Бүгінгі тіркелген аулау жоқ");
+    } else {
+      toast.success(`Күн аяқталды`, { description: `${count} жазба тарихқа көшірілді, квоталар жаңартылды` });
+    }
+  };
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
-      <div className="mb-6">
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Inspector</p>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Regional Monitoring</h1>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Инспектор</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Аймақтық бақылау</h1>
+        </div>
+        <Button onClick={onEndShift} variant="destructive">
+          <Power className="mr-1.5 h-4 w-4" /> Күнді аяқтау
+        </Button>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard icon={<Users className="h-5 w-5" />} label="Registered Fishermen" value={String(fishermen.length)} accent="primary" />
-        <KpiCard icon={<Scale className="h-5 w-5" />} label="Total Catch Today" value={`${todayTotal.toFixed(0)} kg`} accent="accent" />
+        <KpiCard icon={<Users className="h-5 w-5" />} label="Балықшылар" value={String(fishermen.length)} accent="primary" />
+        <KpiCard icon={<Scale className="h-5 w-5" />} label="Бүгінгі аулау" value={`${todayTotal.toFixed(0)} kg`} accent="accent" />
         <KpiCard
           icon={<AlertTriangle className="h-5 w-5" />}
-          label="Active Alerts"
+          label="Белсенді ескертулер"
           value={String(alerts.length)}
           accent={alerts.length > 0 ? "destructive" : "success"}
         />
       </div>
 
-      {/* Charts */}
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <Card className="border-border/60 bg-card/60 lg:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Quota Consumption by Species</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Квотаны тұтыну (балық түрі)</CardTitle>
           </CardHeader>
           <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -103,10 +125,10 @@ function InspectorPage() {
         </Card>
 
         <Card className="border-border/60 bg-card/60">
-          <CardHeader className="pb-2"><CardTitle className="text-base">Catch Composition</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Аулау құрамы</CardTitle></CardHeader>
           <CardContent className="h-[320px]">
             {pieData.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No data</div>
+              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Деректер жоқ</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -122,48 +144,166 @@ function InspectorPage() {
         </Card>
       </div>
 
-      {/* Live Monitor */}
-      <Card className="mt-5 border-border/60 bg-card/60">
-        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-          <CardTitle className="text-base">Live Catch Monitor</CardTitle>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-primary" /></span>
-            Live
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Fisherman</TableHead>
-                <TableHead>Fish</TableHead>
-                <TableHead className="text-right">Weight</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs.slice(0, 15).map((l) => {
-                const exceeded = exceededFishermen.has(l.fishermanId);
-                return (
-                  <TableRow key={l.id} className={exceeded ? "bg-destructive/5" : ""}>
-                    <TableCell className="font-medium">{l.fishermanName}</TableCell>
-                    <TableCell>{l.fishType}</TableCell>
-                    <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{format(l.timestamp, "MMM d, HH:mm")}</TableCell>
-                    <TableCell className="text-right">
-                      {exceeded
-                        ? <Badge variant="destructive">Quota Exceeded!</Badge>
-                        : <Badge className="bg-success/20 text-success border border-success/30 hover:bg-success/20">Authorized</Badge>}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="monitor" className="mt-5">
+        <TabsList>
+          <TabsTrigger value="monitor">Тікелей бақылау</TabsTrigger>
+          <TabsTrigger value="controls"><Settings2 className="mr-1.5 h-3.5 w-3.5" /> Квота басқару</TabsTrigger>
+          <TabsTrigger value="history"><History className="mr-1.5 h-3.5 w-3.5" /> Тарих ({history.length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="monitor">
+          <Card className="border-border/60 bg-card/60">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <CardTitle className="text-base">Тікелей мониторинг</CardTitle>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-primary" /></span>
+                Live
+              </div>
+            </CardHeader>
+            <CardContent>
+              {logs.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">Бүгін аулау тіркелмеген.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Балықшы</TableHead>
+                      <TableHead>Балық</TableHead>
+                      <TableHead className="text-right">Салмағы</TableHead>
+                      <TableHead>Уақыты</TableHead>
+                      <TableHead className="text-right">Статус</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {logs.slice(0, 20).map((l) => {
+                      const exceeded = exceededFishermen.has(l.fishermanId);
+                      return (
+                        <TableRow key={l.id} className={exceeded ? "bg-destructive/5" : ""}>
+                          <TableCell className="font-medium">{l.fishermanName}</TableCell>
+                          <TableCell>{l.fishType}</TableCell>
+                          <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{format(l.timestamp, "MMM d, HH:mm")}</TableCell>
+                          <TableCell className="text-right">
+                            {exceeded
+                              ? <Badge variant="destructive">Квота асырылды!</Badge>
+                              : <Badge className="bg-success/20 text-success border border-success/30 hover:bg-success/20">Рұқсат етілген</Badge>}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="controls">
+          <QuotaControls
+            regionQuotas={regionQuotas}
+            perFishermanQuotas={perFishermanQuotas}
+            onSave={(region, perF) => {
+              updateRegionQuotas(region);
+              updatePerFishermanQuotas(perF);
+              toast.success("Квоталар жаңартылды");
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="history">
+          <Card className="border-border/60 bg-card/60">
+            <CardHeader className="pb-3"><CardTitle className="text-base">Тарих журналы</CardTitle></CardHeader>
+            <CardContent>
+              {history.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Тарих бос. "Күнді аяқтау" батырмасын басу арқылы күнді жабыңыз.
+                </p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Күні / уақыты</TableHead>
+                      <TableHead>Балықшы</TableHead>
+                      <TableHead>Балық түрі</TableHead>
+                      <TableHead className="text-right">Салмағы (кг)</TableHead>
+                      <TableHead className="text-right">Статус</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {history.slice(0, 100).map((h) => (
+                      <TableRow key={h.id}>
+                        <TableCell className="text-xs text-muted-foreground">{format(h.timestamp, "yyyy-MM-dd HH:mm")}</TableCell>
+                        <TableCell className="font-medium">{h.fishermanName}</TableCell>
+                        <TableCell>{h.fishType}</TableCell>
+                        <TableCell className="text-right tabular-nums">{h.weightKg}kg</TableCell>
+                        <TableCell className="text-right">
+                          {h.status === "Quota Exceeded"
+                            ? <Badge variant="destructive">Квота асырылды</Badge>
+                            : <Badge className="bg-success/20 text-success border border-success/30 hover:bg-success/20">Рұқсат етілген</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </main>
+  );
+}
+
+function QuotaControls({
+  regionQuotas, perFishermanQuotas, onSave,
+}: {
+  regionQuotas: Record<FishType, number>;
+  perFishermanQuotas: Record<FishType, number>;
+  onSave: (region: Record<FishType, number>, perF: Record<FishType, number>) => void;
+}) {
+  const [region, setRegion] = useState(regionQuotas);
+  const [perF, setPerF] = useState(perFishermanQuotas);
+
+  useEffect(() => { setRegion(regionQuotas); }, [regionQuotas]);
+  useEffect(() => { setPerF(perFishermanQuotas); }, [perFishermanQuotas]);
+
+  return (
+    <Card className="border-border/60 bg-card/60">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2"><Settings2 className="h-4 w-4 text-primary" /> Күндік квота шектері (кг)</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {FISH_TYPES.map((t) => (
+            <div key={`r-${t}`} className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t} · аймақ</Label>
+              <Input
+                type="number" min={0} step={50}
+                value={region[t]}
+                onChange={(e) => setRegion({ ...region, [t]: Number(e.target.value) || 0 })}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {FISH_TYPES.map((t) => (
+            <div key={`p-${t}`} className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">{t} · бір балықшы</Label>
+              <Input
+                type="number" min={0} step={10}
+                value={perF[t]}
+                onChange={(e) => setPerF({ ...perF, [t]: Number(e.target.value) || 0 })}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={() => onSave(region, perF)}>
+            <Save className="mr-1.5 h-4 w-4" /> Сақтау
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Anchor, Loader2, Waves } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useFishery } from "@/lib/fishery-store";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { registerFisherman } = useFishery();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [iin, setIin] = useState("");
@@ -54,10 +56,12 @@ function RegisterPage() {
       return;
     }
 
+    const fullName = `${data.first_name} ${data.last_name}`;
     localStorage.setItem(
       "digital-fisherman:user",
-      JSON.stringify({ id: data.id, name: `${data.first_name} ${data.last_name}` }),
+      JSON.stringify({ id: data.id, name: fullName }),
     );
+    registerFisherman({ id: data.id, name: fullName, license: `IIN-${iin.slice(-4)}` });
     toast.success("Тіркелу сәтті аяқталды");
     navigate({ to: "/fisherman" });
   };
