@@ -131,6 +131,21 @@ function FishermanPage() {
       </Card>
 
       <Card className="mt-5 border-border/60 bg-card/60">
+        <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Нарықтық бағалар</CardTitle></CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-2">
+            {FISH_TYPES.map((t) => (
+              <div key={t} className="rounded-md border border-border/60 bg-background/40 px-2.5 py-2 text-center">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">{t}</p>
+                <p className="mt-0.5 text-sm font-bold tabular-nums text-primary">{(marketPrices[t] ?? 0).toLocaleString("ru-RU")}</p>
+                <p className="text-[10px] text-muted-foreground">KZT/кг</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-5 border-border/60 bg-card/60">
         <CardHeader className="pb-3"><CardTitle className="text-base">Жаңа аулау тіркеу</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
