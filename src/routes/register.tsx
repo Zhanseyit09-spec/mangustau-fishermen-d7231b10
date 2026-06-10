@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Anchor, Loader2, Waves } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useFishery } from "@/lib/fishery-store";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
