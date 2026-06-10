@@ -33,7 +33,8 @@ function InspectorPage() {
     fishermen, logs, history,
     getConsumedRegion,
     regionQuotas, perFishermanQuotas,
-    updateRegionQuotas, updatePerFishermanQuotas,
+    marketPrices,
+    updateRegionQuotas, updatePerFishermanQuotas, updateMarketPrices,
     endDailyShift,
   } = useFishery();
   const consumed = getConsumedRegion();
