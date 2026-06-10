@@ -9,8 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as InspectorRouteImport } from './routes/inspector'
+import { Route as FishermanRouteImport } from './routes/fisherman'
 import { Route as IndexRouteImport } from './routes/index'
 
+const InspectorRoute = InspectorRouteImport.update({
+  id: '/inspector',
+  path: '/inspector',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FishermanRoute = FishermanRouteImport.update({
+  id: '/fisherman',
+  path: '/fisherman',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +31,50 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fisherman': typeof FishermanRoute
+  '/inspector': typeof InspectorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fisherman': typeof FishermanRoute
+  '/inspector': typeof InspectorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fisherman': typeof FishermanRoute
+  '/inspector': typeof InspectorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/fisherman' | '/inspector'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/fisherman' | '/inspector'
+  id: '__root__' | '/' | '/fisherman' | '/inspector'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FishermanRoute: typeof FishermanRoute
+  InspectorRoute: typeof InspectorRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/inspector': {
+      id: '/inspector'
+      path: '/inspector'
+      fullPath: '/inspector'
+      preLoaderRoute: typeof InspectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fisherman': {
+      id: '/fisherman'
+      path: '/fisherman'
+      fullPath: '/fisherman'
+      preLoaderRoute: typeof FishermanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +87,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FishermanRoute: FishermanRoute,
+  InspectorRoute: InspectorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
