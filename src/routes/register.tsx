@@ -56,10 +56,12 @@ function RegisterPage() {
       return;
     }
 
+    const fullName = `${data.first_name} ${data.last_name}`;
     localStorage.setItem(
       "digital-fisherman:user",
-      JSON.stringify({ id: data.id, name: `${data.first_name} ${data.last_name}` }),
+      JSON.stringify({ id: data.id, name: fullName }),
     );
+    registerFisherman({ id: data.id, name: fullName, license: `IIN-${iin.slice(-4)}` });
     toast.success("Тіркелу сәтті аяқталды");
     navigate({ to: "/fisherman" });
   };
