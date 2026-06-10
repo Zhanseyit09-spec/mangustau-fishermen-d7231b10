@@ -175,6 +175,7 @@ function InspectorPage() {
                       <TableHead>Балықшы</TableHead>
                       <TableHead>Балық</TableHead>
                       <TableHead className="text-right">Салмағы</TableHead>
+                      <TableHead className="text-right">Құны</TableHead>
                       <TableHead>Уақыты</TableHead>
                       <TableHead className="text-right">Статус</TableHead>
                     </TableRow>
@@ -187,6 +188,7 @@ function InspectorPage() {
                           <TableCell className="font-medium">{l.fishermanName}</TableCell>
                           <TableCell>{l.fishType}</TableCell>
                           <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
+                          <TableCell className="text-right tabular-nums text-primary font-semibold">{fmtKZT(l.weightKg * (marketPrices[l.fishType] ?? 0))}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>
                           <TableCell className="text-right">
                             {exceeded
