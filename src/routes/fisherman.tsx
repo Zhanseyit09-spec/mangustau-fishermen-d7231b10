@@ -36,6 +36,8 @@ function FishermanPage() {
   } = useFishery();
   const [fishType, setFishType] = useState<FishType>("Sturgeon");
   const [weight, setWeight] = useState("");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
