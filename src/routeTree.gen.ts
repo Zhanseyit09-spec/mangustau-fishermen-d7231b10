@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as InspectorRouteImport } from './routes/inspector'
 import { Route as FishermanRouteImport } from './routes/fisherman'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InspectorRoute = InspectorRouteImport.update({
   id: '/inspector',
   path: '/inspector',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fisherman': typeof FishermanRoute
   '/inspector': typeof InspectorRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fisherman': typeof FishermanRoute
   '/inspector': typeof InspectorRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/fisherman': typeof FishermanRoute
   '/inspector': typeof InspectorRoute
+  '/register': typeof RegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/fisherman' | '/inspector'
+  fullPaths: '/' | '/fisherman' | '/inspector' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fisherman' | '/inspector'
-  id: '__root__' | '/' | '/fisherman' | '/inspector'
+  to: '/' | '/fisherman' | '/inspector' | '/register'
+  id: '__root__' | '/' | '/fisherman' | '/inspector' | '/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FishermanRoute: typeof FishermanRoute
   InspectorRoute: typeof InspectorRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inspector': {
       id: '/inspector'
       path: '/inspector'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FishermanRoute: FishermanRoute,
   InspectorRoute: InspectorRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
