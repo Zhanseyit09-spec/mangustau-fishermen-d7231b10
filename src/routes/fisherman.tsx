@@ -167,6 +167,7 @@ function FishermanPage() {
                   {LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                 </SelectContent>
               </Select>
+            </div>
             <div className="space-y-1.5">
               <Label>Салмағы (кг)</Label>
               <Input type="number" inputMode="decimal" step="0.1" min="0" placeholder="мысалы 12.5"
