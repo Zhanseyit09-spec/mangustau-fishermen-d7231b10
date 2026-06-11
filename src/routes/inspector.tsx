@@ -161,6 +161,40 @@ function InspectorPage() {
         </Card>
       </div>
 
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <Card className="border-border/60 bg-card/60 lg:col-span-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Маңғыстау балық аулау аймақтары</CardTitle>
+            {zoneTotals[topZone] > 0 && (
+              <Badge className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/20">
+                Көшбасшы: {topZone} · {zoneTotals[topZone].toFixed(0)} кг
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent>
+            <MangystauMap totals={zoneTotals} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/60 bg-card/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Аймақ бойынша салыстыру (бүгін)</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={zoneBarData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.32 0.05 240)" />
+                <XAxis dataKey="name" stroke="oklch(0.72 0.03 220)" fontSize={12} />
+                <YAxis stroke="oklch(0.72 0.03 220)" fontSize={12} />
+                <Tooltip contentStyle={{ background: "oklch(0.23 0.05 240)", border: "1px solid oklch(0.32 0.05 240)", borderRadius: 8, color: "white" }} />
+                <Bar dataKey="Бүгінгі аулау (кг)" fill="oklch(0.72 0.16 160)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+
       <Tabs defaultValue="monitor" className="mt-5">
         <TabsList>
           <TabsTrigger value="monitor">Тікелей бақылау</TabsTrigger>
