@@ -160,6 +160,14 @@ function FishermanPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
+              <Label>Аулау орны</Label>
+              <Select value={location} onValueChange={(v) => setLocation(v as Location)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            <div className="space-y-1.5">
               <Label>Салмағы (кг)</Label>
               <Input type="number" inputMode="decimal" step="0.1" min="0" placeholder="мысалы 12.5"
                 value={weight} onChange={(e) => setWeight(e.target.value)} />
