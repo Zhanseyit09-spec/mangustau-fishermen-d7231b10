@@ -4,6 +4,15 @@ export type FishType = "Sturgeon" | "Common Carp" | "Caspian Roach";
 
 export const FISH_TYPES: FishType[] = ["Sturgeon", "Common Carp", "Caspian Roach"];
 
+export type Location = "Aktau" | "Bautino" | "Kuryk";
+export const LOCATIONS: Location[] = ["Aktau", "Bautino", "Kuryk"];
+// Approximate coordinates on a 0-100 SVG viewBox for the Mangystau coast
+export const LOCATION_COORDS: Record<Location, { x: number; y: number; label: string }> = {
+  Bautino: { x: 38, y: 22, label: "Баутино" },
+  Aktau:   { x: 30, y: 55, label: "Ақтау" },
+  Kuryk:   { x: 36, y: 72, label: "Құрық" },
+};
+
 export const DEFAULT_REGION_QUOTAS: Record<FishType, number> = {
   Sturgeon: 1000,
   "Common Carp": 2500,
@@ -31,6 +40,7 @@ export interface CatchLog {
   fishType: FishType;
   weightKg: number;
   timestamp: number;
+  location: Location;
 }
 
 export interface HistoryEntry extends CatchLog {
@@ -74,7 +84,7 @@ const defaultState = (): PersistState => ({
 });
 
 interface Ctx extends PersistState {
-  addLog: (input: { fishermanId: string; fishType: FishType; weightKg: number }) => void;
+  addLog: (input: { fishermanId: string; fishType: FishType; weightKg: number; location: Location }) => void;
   setCurrentFishermanId: (id: string) => void;
   registerFisherman: (f: Fisherman) => void;
   getConsumedByFisherman: (fishermanId: string) => Record<FishType, number>;
@@ -144,7 +154,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           currentFishermanId: f.id,
         };
       }),
-    addLog: ({ fishermanId, fishType, weightKg }) => {
+    addLog: ({ fishermanId, fishType, weightKg, location }) => {
       setState((s) => {
         const f = s.fishermen.find((x) => x.id === fishermanId);
         if (!f) return s;
@@ -155,6 +165,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           fishType,
           weightKg,
           timestamp: Date.now(),
+          location,
         };
         return { ...s, logs: [entry, ...s.logs] };
       });

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { FISH_TYPES, useFishery, type FishType } from "@/lib/fishery-store";
+import { FISH_TYPES, LOCATIONS, useFishery, type FishType, type Location } from "@/lib/fishery-store";
+import { MangystauMap } from "@/components/MangystauMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save, Wallet } from "lucide-react";
+import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save, Wallet, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -76,6 +77,17 @@ function InspectorPage() {
     .map((t) => ({ name: t, value: Math.round(consumed[t]) }))
     .filter((d) => d.value > 0);
 
+  const zoneTotals = useMemo(() => {
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const init: Record<Location, number> = { Aktau: 0, Bautino: 0, Kuryk: 0 };
+    for (const l of logs) {
+      if (l.timestamp >= start.getTime() && l.location) init[l.location] += l.weightKg;
+    }
+    return init;
+  }, [logs]);
+  const zoneBarData = LOCATIONS.map((l) => ({ name: l, "Бүгінгі аулау (кг)": Math.round(zoneTotals[l]) }));
+  const topZone = LOCATIONS.reduce<Location>((a, b) => (zoneTotals[b] > zoneTotals[a] ? b : a), LOCATIONS[0]);
+
   const onEndShift = () => {
     const count = endDailyShift();
     if (count === 0) {
@@ -89,8 +101,9 @@ function InspectorPage() {
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Инспектор</p>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Аймақтық бақылау</h1>
+          <p className="text-xs uppercase tracking-[0.18em] text-primary">Каспий өңірлік балық инспекциясы</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Маңғыстау аймақтық бақылау</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Mangystau Region · Caspian Sea</p>
         </div>
         <Button onClick={onEndShift} variant="destructive">
           <Power className="mr-1.5 h-4 w-4" /> Күнді аяқтау
@@ -148,6 +161,40 @@ function InspectorPage() {
         </Card>
       </div>
 
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <Card className="border-border/60 bg-card/60 lg:col-span-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Маңғыстау балық аулау аймақтары</CardTitle>
+            {zoneTotals[topZone] > 0 && (
+              <Badge className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/20">
+                Көшбасшы: {topZone} · {zoneTotals[topZone].toFixed(0)} кг
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent>
+            <MangystauMap totals={zoneTotals} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/60 bg-card/60">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Аймақ бойынша салыстыру (бүгін)</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={zoneBarData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.32 0.05 240)" />
+                <XAxis dataKey="name" stroke="oklch(0.72 0.03 220)" fontSize={12} />
+                <YAxis stroke="oklch(0.72 0.03 220)" fontSize={12} />
+                <Tooltip contentStyle={{ background: "oklch(0.23 0.05 240)", border: "1px solid oklch(0.32 0.05 240)", borderRadius: 8, color: "white" }} />
+                <Bar dataKey="Бүгінгі аулау (кг)" fill="oklch(0.72 0.16 160)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+
       <Tabs defaultValue="monitor" className="mt-5">
         <TabsList>
           <TabsTrigger value="monitor">Тікелей бақылау</TabsTrigger>
@@ -174,6 +221,7 @@ function InspectorPage() {
                     <TableRow>
                       <TableHead>Балықшы</TableHead>
                       <TableHead>Балық</TableHead>
+                      <TableHead>Аймақ</TableHead>
                       <TableHead className="text-right">Салмағы</TableHead>
                       <TableHead className="text-right">Құны</TableHead>
                       <TableHead>Уақыты</TableHead>
@@ -187,6 +235,7 @@ function InspectorPage() {
                         <TableRow key={l.id} className={exceeded ? "bg-destructive/5" : ""}>
                           <TableCell className="font-medium">{l.fishermanName}</TableCell>
                           <TableCell>{l.fishType}</TableCell>
+                          <TableCell className="text-xs"><span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" />{l.location ?? "—"}</span></TableCell>
                           <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
                           <TableCell className="text-right tabular-nums text-primary font-semibold">{fmtKZT(l.weightKg * (marketPrices[l.fishType] ?? 0))}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>

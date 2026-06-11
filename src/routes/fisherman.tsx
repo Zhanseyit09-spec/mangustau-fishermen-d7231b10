@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { FISH_TYPES, useFishery, type FishType } from "@/lib/fishery-store";
+import { FISH_TYPES, LOCATIONS, useFishery, type FishType, type Location } from "@/lib/fishery-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,7 @@ function FishermanPage() {
     setCurrentFishermanId,
   } = useFishery();
   const [fishType, setFishType] = useState<FishType>("Sturgeon");
+  const [location, setLocation] = useState<Location>("Aktau");
   const [weight, setWeight] = useState("");
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -70,7 +71,7 @@ function FishermanPage() {
       toast.error("Дұрыс салмақ енгізіңіз (кг)");
       return;
     }
-    addLog({ fishermanId: activeId, fishType, weightKg: w });
+    addLog({ fishermanId: activeId, fishType, weightKg: w, location });
     const newTotal = consumed[fishType] + w;
     const quota = perFishermanQuotas[fishType];
     toast.success(`${w}kg ${fishType} тіркелді`, {
@@ -155,6 +156,15 @@ function FishermanPage() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {FISH_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Аулау орны</Label>
+              <Select value={location} onValueChange={(v) => setLocation(v as Location)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
