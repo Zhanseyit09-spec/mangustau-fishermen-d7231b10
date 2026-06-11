@@ -90,8 +90,9 @@ function InspectorPage() {
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Инспектор</p>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Аймақтық бақылау</h1>
+          <p className="text-xs uppercase tracking-[0.18em] text-primary">Каспий өңірлік балық инспекциясы</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Маңғыстау аймақтық бақылау</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Mangystau Region · Caspian Sea</p>
         </div>
         <Button onClick={onEndShift} variant="destructive">
           <Power className="mr-1.5 h-4 w-4" /> Күнді аяқтау
