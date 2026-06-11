@@ -154,7 +154,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           currentFishermanId: f.id,
         };
       }),
-    addLog: ({ fishermanId, fishType, weightKg }) => {
+    addLog: ({ fishermanId, fishType, weightKg, location }) => {
       setState((s) => {
         const f = s.fishermen.find((x) => x.id === fishermanId);
         if (!f) return s;
@@ -165,6 +165,7 @@ export function FisheryProvider({ children }: { children: ReactNode }) {
           fishType,
           weightKg,
           timestamp: Date.now(),
+          location,
         };
         return { ...s, logs: [entry, ...s.logs] };
       });
