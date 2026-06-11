@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { FISH_TYPES, LOCATIONS, LOCATION_COORDS, useFishery, type FishType, type Location } from "@/lib/fishery-store";
+import { FISH_TYPES, LOCATIONS, useFishery, type FishType, type Location } from "@/lib/fishery-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
