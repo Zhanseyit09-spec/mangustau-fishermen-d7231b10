@@ -4,6 +4,15 @@ export type FishType = "Sturgeon" | "Common Carp" | "Caspian Roach";
 
 export const FISH_TYPES: FishType[] = ["Sturgeon", "Common Carp", "Caspian Roach"];
 
+export type Location = "Aktau" | "Bautino" | "Kuryk";
+export const LOCATIONS: Location[] = ["Aktau", "Bautino", "Kuryk"];
+// Approximate coordinates on a 0-100 SVG viewBox for the Mangystau coast
+export const LOCATION_COORDS: Record<Location, { x: number; y: number; label: string }> = {
+  Bautino: { x: 38, y: 22, label: "Баутино" },
+  Aktau:   { x: 30, y: 55, label: "Ақтау" },
+  Kuryk:   { x: 36, y: 72, label: "Құрық" },
+};
+
 export const DEFAULT_REGION_QUOTAS: Record<FishType, number> = {
   Sturgeon: 1000,
   "Common Carp": 2500,
