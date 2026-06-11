@@ -84,7 +84,7 @@ const defaultState = (): PersistState => ({
 });
 
 interface Ctx extends PersistState {
-  addLog: (input: { fishermanId: string; fishType: FishType; weightKg: number }) => void;
+  addLog: (input: { fishermanId: string; fishType: FishType; weightKg: number; location: Location }) => void;
   setCurrentFishermanId: (id: string) => void;
   registerFisherman: (f: Fisherman) => void;
   getConsumedByFisherman: (fishermanId: string) => Record<FishType, number>;
