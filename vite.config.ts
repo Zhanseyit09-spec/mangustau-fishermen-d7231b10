@@ -6,6 +6,8 @@ export default defineConfig({
   },
   vite: {
     server: {
+      port: 8080,
+      ws: false,
       hmr: false,
     },
   },
