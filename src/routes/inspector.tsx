@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save, Wallet, MapPin } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Users, Scale, AlertTriangle, TrendingUp, Settings2, History, Power, Save, Wallet, MapPin, Sparkles, Waves, Thermometer, Gauge } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
