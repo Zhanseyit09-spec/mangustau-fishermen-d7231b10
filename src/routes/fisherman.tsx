@@ -38,6 +38,7 @@ function FishermanPage() {
     setCurrentFishermanId,
   } = useFishery();
   const [fishType, setFishType] = useState<FishType>("Sturgeon");
+  const [location, setLocation] = useState<Location>("Aktau");
   const [weight, setWeight] = useState("");
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
