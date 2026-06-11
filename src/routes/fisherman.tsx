@@ -71,7 +71,7 @@ function FishermanPage() {
       toast.error("Дұрыс салмақ енгізіңіз (кг)");
       return;
     }
-    addLog({ fishermanId: activeId, fishType, weightKg: w });
+    addLog({ fishermanId: activeId, fishType, weightKg: w, location });
     const newTotal = consumed[fishType] + w;
     const quota = perFishermanQuotas[fishType];
     toast.success(`${w}kg ${fishType} тіркелді`, {
