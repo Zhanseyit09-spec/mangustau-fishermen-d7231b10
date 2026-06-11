@@ -42,6 +42,7 @@ function InspectorPage() {
   } = useFishery();
   const consumed = getConsumedRegion();
   const [mounted, setMounted] = useState(false);
+  const [aiMode, setAiMode] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
   const todayTotal = useMemo(() => {
