@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { FISH_TYPES, useFishery, type FishType } from "@/lib/fishery-store";
+import { FISH_TYPES, LOCATIONS, useFishery, type FishType, type Location } from "@/lib/fishery-store";
+import { MangystauMap } from "@/components/MangystauMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
