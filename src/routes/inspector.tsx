@@ -221,6 +221,7 @@ function InspectorPage() {
                     <TableRow>
                       <TableHead>Балықшы</TableHead>
                       <TableHead>Балық</TableHead>
+                      <TableHead>Аймақ</TableHead>
                       <TableHead className="text-right">Салмағы</TableHead>
                       <TableHead className="text-right">Құны</TableHead>
                       <TableHead>Уақыты</TableHead>
