@@ -40,6 +40,7 @@ export interface CatchLog {
   fishType: FishType;
   weightKg: number;
   timestamp: number;
+  location: Location;
 }
 
 export interface HistoryEntry extends CatchLog {
