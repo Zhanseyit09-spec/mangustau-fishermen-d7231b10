@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Fish, Plus, Clock, LogOut, Wallet } from "lucide-react";
+import { Fish, Plus, Clock, LogOut, Wallet, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 
 const fmtKZT = (n: number) => `${Math.round(n).toLocaleString("ru-RU")} KZT`;
@@ -130,6 +130,20 @@ function FishermanPage() {
           })}
         </CardContent>
       </Card>
+
+      <div className="mt-5 rounded-lg border border-[oklch(0.85_0.22_50)]/40 bg-gradient-to-br from-[oklch(0.72_0.22_25)]/10 to-[oklch(0.85_0.22_50)]/5 p-3.5 animate-fade-in">
+        <div className="flex items-start gap-2.5">
+          <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[oklch(0.85_0.22_50)]/20">
+            <Sparkles className="h-3.5 w-3.5 text-[oklch(0.85_0.22_50)]" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[oklch(0.85_0.22_50)]">AI Ұсынысы</p>
+            <p className="mt-0.5 text-sm leading-snug">
+              Бүгін <span className="font-semibold">Баутино</span> аймағында ағыс тұрақты, <span className="font-semibold">сазан</span> аулау ықтималдығы жоғары!
+            </p>
+          </div>
+        </div>
+      </div>
 
       <Card className="mt-5 border-border/60 bg-card/60">
         <CardHeader className="pb-3"><CardTitle className="text-base flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Нарықтық бағалар</CardTitle></CardHeader>
