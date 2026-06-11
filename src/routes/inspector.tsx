@@ -235,6 +235,7 @@ function InspectorPage() {
                         <TableRow key={l.id} className={exceeded ? "bg-destructive/5" : ""}>
                           <TableCell className="font-medium">{l.fishermanName}</TableCell>
                           <TableCell>{l.fishType}</TableCell>
+                          <TableCell className="text-xs"><span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" />{l.location ?? "—"}</span></TableCell>
                           <TableCell className="text-right tabular-nums">{l.weightKg}kg</TableCell>
                           <TableCell className="text-right tabular-nums text-primary font-semibold">{fmtKZT(l.weightKg * (marketPrices[l.fishType] ?? 0))}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{mounted ? format(l.timestamp, "MMM d, HH:mm") : ""}</TableCell>
