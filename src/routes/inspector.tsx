@@ -77,6 +77,17 @@ function InspectorPage() {
     .map((t) => ({ name: t, value: Math.round(consumed[t]) }))
     .filter((d) => d.value > 0);
 
+  const zoneTotals = useMemo(() => {
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const init: Record<Location, number> = { Aktau: 0, Bautino: 0, Kuryk: 0 };
+    for (const l of logs) {
+      if (l.timestamp >= start.getTime() && l.location) init[l.location] += l.weightKg;
+    }
+    return init;
+  }, [logs]);
+  const zoneBarData = LOCATIONS.map((l) => ({ name: l, "Бүгінгі аулау (кг)": Math.round(zoneTotals[l]) }));
+  const topZone = LOCATIONS.reduce<Location>((a, b) => (zoneTotals[b] > zoneTotals[a] ? b : a), LOCATIONS[0]);
+
   const onEndShift = () => {
     const count = endDailyShift();
     if (count === 0) {
