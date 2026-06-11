@@ -165,16 +165,55 @@ function InspectorPage() {
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <Card className="border-border/60 bg-card/60 lg:col-span-2">
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between gap-3 flex-wrap">
             <CardTitle className="text-base flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Маңғыстау балық аулау аймақтары</CardTitle>
-            {zoneTotals[topZone] > 0 && (
-              <Badge className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/20">
-                Көшбасшы: {topZone} · {zoneTotals[topZone].toFixed(0)} кг
-              </Badge>
-            )}
+            <div className="flex items-center gap-3">
+              {zoneTotals[topZone] > 0 && !aiMode && (
+                <Badge className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/20">
+                  Көшбасшы: {topZone} · {zoneTotals[topZone].toFixed(0)} кг
+                </Badge>
+              )}
+              <label className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs transition-colors ${aiMode ? "border-[oklch(0.72_0.22_25)]/60 bg-[oklch(0.72_0.22_25)]/10" : "border-border/60 bg-background/40"}`}>
+                <Sparkles className={`h-3.5 w-3.5 ${aiMode ? "text-[oklch(0.85_0.22_50)]" : "text-muted-foreground"}`} />
+                <span className="font-medium">AI Балық Болжамы</span>
+                <Switch checked={aiMode} onCheckedChange={setAiMode} />
+              </label>
+            </div>
           </CardHeader>
           <CardContent>
-            <MangystauMap totals={zoneTotals} />
+            <div className="relative">
+              <MangystauMap totals={zoneTotals} aiMode={aiMode} />
+              {aiMode && (
+                <div className="pointer-events-none absolute left-2 top-2 w-[180px] rounded-lg border border-[oklch(0.85_0.22_50)]/40 bg-background/85 p-3 text-xs backdrop-blur animate-fade-in">
+                  <div className="mb-2 flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-[oklch(0.85_0.22_50)]" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[oklch(0.85_0.22_50)]">AI Океан деректері</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1 text-muted-foreground"><Waves className="h-3 w-3" /> Ағыс</span>
+                      <span className="font-semibold tabular-nums">0.4 м/с</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1 text-muted-foreground"><Thermometer className="h-3 w-3" /> Су темп.</span>
+                      <span className="font-semibold tabular-nums">14 °C</span>
+                    </div>
+                    <div className="border-t border-border/60 pt-2">
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <span className="flex items-center gap-1 text-muted-foreground"><Gauge className="h-3 w-3" /> AI Сенімділік</span>
+                        <span className="font-bold text-[oklch(0.85_0.22_50)] tabular-nums">92%</span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div className="h-full rounded-full bg-gradient-to-r from-[oklch(0.72_0.22_25)] to-[oklch(0.85_0.22_50)]" style={{ width: "92%" }} />
+                      </div>
+                      <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">
+                        Бекіре / сазан болу ықтималдығы жоғары
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
